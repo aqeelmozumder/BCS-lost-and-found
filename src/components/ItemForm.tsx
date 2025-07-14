@@ -7,7 +7,7 @@ import NotificationDialog from "./NotificationDialog";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TextField, ThemeProvider, createTheme } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/en-gb"; // For dd/mm/yyyy format
 import {

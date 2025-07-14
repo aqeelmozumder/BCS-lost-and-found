@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { LostFoundItem, User } from "../types";
@@ -32,11 +32,7 @@ const Homepage: React.FC<HomepageProps> = ({ user, onPageChange }) => {
     activeSearches: 0,
   });
 
-  useEffect(() => {
-    fetchItems();
-  }, [user]);
-
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       const itemsRef = collection(db, "items");
       const q = query(
@@ -58,7 +54,11 @@ const Homepage: React.FC<HomepageProps> = ({ user, onPageChange }) => {
       console.error("Error fetching items:", error);
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   const calculateStats = (items: LostFoundItem[]) => {
     const returnedPairs = new Set<string>();

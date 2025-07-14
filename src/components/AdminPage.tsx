@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   collection,
   getDocs,
@@ -66,11 +66,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
     linkedItems: 0,
   });
 
-  useEffect(() => {
-    fetchAllItems();
-  }, []);
-
-  const fetchAllItems = async () => {
+  const fetchAllItems = useCallback(async () => {
     try {
       const itemsRef = collection(db, "items");
       const q = query(itemsRef, orderBy("createdAt", "desc"));
@@ -88,7 +84,11 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
       console.error("Error fetching items:", error);
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAllItems();
+  }, [fetchAllItems]);
 
   const calculateStats = (items: LostFoundItem[]) => {
     const returnedPairs = new Set<string>();
