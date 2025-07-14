@@ -354,7 +354,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
     });
   };
 
-  // Get the selected item for the details modal
   const selectedItem = items.find((item) => item.id === showItemDetails);
 
   if (loading) {
@@ -369,7 +368,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
     <>
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <div className="flex items-center mb-2">
               <Settings className="w-8 h-8 text-red-600 mr-3" />
@@ -382,7 +380,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
             </p>
           </div>
 
-          {/* Statistics Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
             <div className="bg-white p-4 rounded-lg shadow">
               <Package className="w-6 h-6 text-gray-600 mb-2" />
@@ -435,7 +432,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
             </div>
           </div>
 
-          {/* Filter Buttons */}
           <div className="bg-white p-6 rounded-lg shadow mb-8">
             <div className="flex flex-wrap gap-2">
               <button
@@ -490,32 +486,30 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
               </button>
             </div>
           </div>
-
-          {/* Items Table */}
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Item
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Item Details
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Submitted By
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      Date Information
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Approval
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Linked Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -524,18 +518,25 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                   {filteredItems.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <div className="flex items-center mb-2">
-                          <Package className="w-4 h-4 text-gray-400 mr-2" />
-                          <button
-                            onClick={() => setShowItemDetails(item.id!)}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
-                          >
-                            {item.name}
-                          </button>
+                        <button
+                          onClick={() => setShowItemDetails(item.id!)}
+                          title={item.name}
+                          className="block w-full text-left text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {item.name.length > 20
+                            ? `${item.name.substring(0, 15)}...`
+                            : item.name}
+                        </button>
+                        <div
+                          className="text-xs text-gray-500"
+                          title={item.category}
+                        >
+                          {item.category.length > 20
+                            ? `${item.category.substring(0, 20)}...`
+                            : item.category}
                         </div>
                       </td>
-
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <select
                           value={item.status}
                           onChange={(e) =>
@@ -544,7 +545,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                               e.target.value as "lost" | "found" | "returned",
                             )
                           }
-                          className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusBadge(item.status)}`}
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusBadge(
+                            item.status,
+                          )}`}
                         >
                           {item.status === "lost" ||
                           (item.isLinked && item.originalLostItemId) ? (
@@ -562,38 +565,29 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                           )}
                         </select>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center mb-1">
-                          <UserIcon className="w-3 h-3 text-gray-400 mr-2" />
-                          <div className="text-sm text-gray-900">
-                            {item.userName}
-                          </div>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.userName}
                         </div>
-                        <div className="flex items-center">
-                          <Mail className="w-3 h-3 text-gray-400 mr-2" />
-                          <div className="text-sm text-gray-500">
-                            {item.userEmail}
-                          </div>
+                        <div className="text-xs text-gray-500">
+                          {item.userEmail}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
-                        <div className="flex items-center mb-1">
-                          <Calendar className="w-3 h-3 text-gray-400 mr-2" />
-                          <div>
-                            Lost/Found:{" "}
-                            {item.date.toDate().toLocaleDateString("en-US", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <div>
+                          <span className="font-semibold">Lost/Found:</span>{" "}
+                          {item.date.toDate().toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </div>
-                        <div className="flex items-center">
-                          <Calendar className="w-3 h-3 text-gray-400 mr-2" />
-                          <div>Submitted: {formatDate(item.createdAt)}</div>
+                        <div>
+                          <span className="font-semibold">Submitted:</span>{" "}
+                          {formatDate(item.createdAt)}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             item.isApproved
@@ -604,10 +598,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                           {item.isApproved ? "Approved" : "Pending"}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {item.isLinked ? (
                           <div className="text-sm">
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs flex items-center">
+                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center">
                               <Link className="w-3 h-3 mr-1" />
                               Linked
                             </span>
@@ -616,7 +610,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                             </div>
                             <button
                               onClick={() => unlinkItems(item.id!)}
-                              className="flex items-center text-red-600 hover:text-red-800 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded transition-colors mt-1"
+                              className="flex items-center text-red-600 hover:text-red-800 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded-md transition-colors mt-1 font-semibold"
                             >
                               <Unlink className="w-3 h-3 mr-1" />
                               Unlink
@@ -628,23 +622,23 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium">
-                        <div className="flex flex-col gap-2">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2">
                           {!item.isApproved && (
                             <button
                               onClick={() => handleApprove(item.id!)}
-                              className="flex items-center justify-center text-green-600 hover:text-green-900 bg-green-100 hover:bg-green-200 px-3 py-2 rounded transition-colors w-full"
+                              className="flex items-center justify-center text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 p-2 rounded-md transition-colors"
+                              title="Approve"
                             >
-                              <CheckCircle className="w-3 h-3 mr-2" />
-                              Approve
+                              <CheckCircle className="w-4 h-4" />
                             </button>
                           )}
                           <button
                             onClick={() => handleReject(item.id!)}
-                            className="flex items-center justify-center text-red-600 hover:text-red-900 bg-red-100 hover:bg-red-200 px-3 py-2 rounded transition-colors w-full"
+                            className="flex items-center justify-center text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 p-2 rounded-md transition-colors"
+                            title="Delete"
                           >
-                            <Trash2 className="w-3 h-3 mr-2" />
-                            Delete
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -653,7 +647,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                 </tbody>
               </table>
             </div>
-
             {filteredItems.length === 0 && (
               <div className="text-center py-12">
                 <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -663,8 +656,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
               </div>
             )}
           </div>
-
-          {/* Delete Confirmation Modal */}
           {showDeleteConfirm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
@@ -694,8 +685,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
               </div>
             </div>
           )}
-
-          {/* Linking Modal */}
           {showLinkModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
@@ -772,8 +761,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
               </div>
             </div>
           )}
-
-          {/* Item Details Modal */}
           {showItemDetails && selectedItem && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
@@ -791,7 +778,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* First Column - Basic Item Info */}
                   <div className="space-y-4">
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
@@ -845,8 +831,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                       </p>
                     </div>
                   </div>
-
-                  {/* Second Column - User & Contact Info */}
                   <div className="space-y-4">
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
@@ -874,7 +858,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                         Status
                       </label>
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(selectedItem.status)}`}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(
+                          selectedItem.status,
+                        )}`}
                       >
                         {selectedItem.status === "lost" && (
                           <AlertCircle className="w-4 h-4 mr-1" />
@@ -915,8 +901,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                       </span>
                     </div>
                   </div>
-
-                  {/* Third Column - Description & Linking Info */}
                   <div className="space-y-4">
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
@@ -974,8 +958,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                     )}
                   </div>
                 </div>
-
-                {/* Image Section (if exists) - Full Width */}
                 {selectedItem.imageUrl && (
                   <div className="mt-6">
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -988,8 +970,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
                     />
                   </div>
                 )}
-
-                {/* Action Buttons */}
                 <div className="mt-6 flex gap-3 justify-end">
                   {!selectedItem.isApproved && (
                     <button
@@ -1040,8 +1020,6 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
           )}
         </div>
       </div>
-
-      {/* Notification System */}
       {notifications.map((notification) => (
         <NotificationDialog
           key={notification.id}
