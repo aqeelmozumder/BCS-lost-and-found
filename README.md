@@ -1,46 +1,158 @@
-# Getting Started with Create React App
+# BCS Lost \& Found
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, responsive web application for managing lost and found items at Brentwood College School. Built with React, TypeScript, and Firebase, featuring Google authentication and real-time data management.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **Google Authentication**: Secure login using Brentwood College School accounts
+- **Item Management**: Post, search, and manage lost and found items
+- **Admin Dashboard**: Administrative controls for item approval and management
+- **Real-time Updates**: Live data synchronization using Firebase Firestore
+- **Responsive Design**: Mobile-friendly interface that works on all devices
+- **Search \& Filter**: Advanced search functionality to find items quickly
+- **Image Upload**: Support for item photos to help with identification
+- **Statistics Dashboard**: Overview of lost/found items and trends
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 🛠️ Tech Stack
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **Frontend**: React 18 with TypeScript
+- **Styling**: Material-UI (MUI) components
+- **Backend**: Firebase (Firestore, Authentication, Storage, Hosting)
+- **Build Tool**: Create React App
+- **CI/CD**: GitHub Actions with Firebase Hosting
+- **Code Quality**: ESLint, Prettier
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📋 Prerequisites
 
-### `npm run build`
+Before running this project, make sure you have:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js (v14 or higher)
+- npm or yarn package manager
+- Firebase account and project
+- Google Cloud Console project (for authentication)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🔧 Installation
 
-### `npm run eject`
+1. **Clone the repository**
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+git clone https://github.com/your-username/bcs-lost-and-found.git
+cd bcs-lost-and-found
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. **Install dependencies**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm install
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+3. **Set up Firebase configuration**
+    - Create a `.env` file in the root directory
+    - Add your Firebase configuration:
 
-## Learn More
+```env
+REACT_APP_FIREBASE_API_KEY=your_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+4. **Start the development server**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```bash
+npm start
+```
+
+
+The application will open at `http://localhost:3000`.
+
+## 🚀 Deployment
+
+This project is configured for automatic deployment using GitHub Actions and Firebase Hosting.
+
+### Automatic Deployment (Recommended)
+
+1. **Push to main branch** - Automatically deploys to production
+2. **Create pull request** - Automatically creates preview deployment
+
+### Manual Deployment
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
+
+
+## 📁 Project Structure
+
+```
+src/
+├── components/         # React components
+│   ├── AdminPage.tsx   # Admin dashboard
+│   ├── Header.tsx      # Navigation header
+│   ├── Homepage.tsx    # Main homepage
+│   ├── ItemForm.tsx    # Item submission form
+│   ├── ItemCard.tsx    # Item Cards view
+│   └── NotificationDialog.tsx # Custom Feedbacks
+├── firebase/           # Firebase configuration
+├── types/              # TypeScript type definitions
+├── hooks/              # Hook functions
+└── App.tsx            # Main application component
+```
+
+
+## 🔐 Authentication
+
+The application uses Firebase Authentication with Google Sign-In, restricted to Brentwood College School accounts. Users must sign in with their school Google account to access the platform.
+
+## 💾 Database Schema
+
+The application uses Firestore with the following main collections:
+
+- **items**: Lost and found items
+- **users**: User profiles and permissions
+- **categories**: Item categories for organization
+
+
+## 🎨 Styling
+
+The project uses Material-UI for consistent, modern styling with:
+
+- Responsive grid system
+- Custom theme configuration
+- Consistent color palette
+- Mobile-first design approach
+
+
+## 🧪 Code Quality
+
+- **ESLint**: Configured for React and TypeScript
+- **Prettier**: Automatic code formatting
+- **TypeScript**: Type safety and better developer experience
+
+
+## 📝 Available Scripts
+
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm test` - Run tests
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
+
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
