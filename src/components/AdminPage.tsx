@@ -12,6 +12,7 @@ import { db } from "../firebase/config";
 import { LostFoundItem, User } from "../types";
 import { useNotification } from "../hooks/useNotifcation";
 import NotificationDialog from "./NotificationDialog";
+import AdminUserManagement from './AdminUserManagement';
 import {
   Settings,
   Package,
@@ -30,11 +31,15 @@ import {
   Tag,
   FileText,
   X,
+  Shield, // Added for user management tab
+  List,   // Added for item management tab
 } from "lucide-react";
 
 interface AdminPageProps {
   user: User;
 }
+
+type AdminTab = 'itemManagement' | 'userManagement';
 
 const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
   const [items, setItems] = useState<LostFoundItem[]>([]);
@@ -55,6 +60,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
     showWarning,
     removeNotification,
   } = useNotification();
+
+  const [activeTab, setActiveTab] = useState<AdminTab>("itemManagement"); // State for managing active tab
 
   const [stats, setStats] = useState({
     totalItems: 0,
@@ -364,6 +371,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
     );
   }
 
+  // Updated tabStyle to include flex properties
+  const tabStyle =
+    "flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+  const activeTabStyle = "bg-indigo-600 text-white shadow-md";
+  const inactiveTabStyle = "text-gray-600 hover:bg-gray-200";
+
   return (
     <>
       <div className="min-h-screen bg-gray-50">
@@ -376,286 +389,340 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
               </h1>
             </div>
             <p className="text-gray-600">
-              Manage lost and found items for Brentwood College School
+              Manage lost and found items and user permissions for Brentwood
+              College School {/* Updated description text */}
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <Package className="w-6 h-6 text-gray-600 mb-2" />
-              <div className="text-2xl font-bold text-gray-900 mb-1">
-                {stats.totalItems}
-              </div>
-              <div className="text-sm text-gray-600">Total Items</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <Clock className="w-6 h-6 text-orange-600 mb-2" />
-              <div className="text-2xl font-bold text-orange-600 mb-1">
-                {stats.pendingApproval}
-              </div>
-              <div className="text-sm text-gray-600">Pending</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-green-600 mb-1">
-                {stats.approvedItems}
-              </div>
-              <div className="text-sm text-gray-600">Approved</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <AlertCircle className="w-6 h-6 text-red-600 mb-2" />
-              <div className="text-2xl font-bold text-red-600 mb-1">
-                {stats.lostItems}
-              </div>
-              <div className="text-sm text-gray-600">Lost</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <Search className="w-6 h-6 text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-blue-600 mb-1">
-                {stats.foundItems}
-              </div>
-              <div className="text-sm text-gray-600">Found</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <RotateCcw className="w-6 h-6 text-purple-600 mb-2" />
-              <div className="text-2xl font-bold text-purple-600 mb-1">
-                {stats.returnedItems}
-              </div>
-              <div className="text-sm text-gray-600">Returned</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <Link className="w-6 h-6 text-indigo-600 mb-2" />
-              <div className="text-2xl font-bold text-indigo-600 mb-1">
-                {stats.linkedItems}
-              </div>
-              <div className="text-sm text-gray-600">Linked</div>
+          {/* Tab Navigation */}
+          <div className="mb-8">
+            <div className="flex border-b border-gray-200">
+              <button
+                onClick={() => setActiveTab("itemManagement")}
+                className={`${tabStyle} ${
+                  activeTab === "itemManagement"
+                    ? activeTabStyle
+                    : inactiveTabStyle
+                }`}
+              >
+                <List size={16} />
+                Item Management
+              </button>
+              <button
+                onClick={() => setActiveTab("userManagement")}
+                className={`${tabStyle} ${
+                  activeTab === "userManagement"
+                    ? activeTabStyle
+                    : inactiveTabStyle
+                }`}
+              >
+                <Shield size={16} />
+                User Management
+              </button>
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow mb-8">
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilter("all")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "all"
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                All Items ({items.length})
-              </button>
-              <button
-                onClick={() => setFilter("pending")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "pending"
-                    ? "bg-orange-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Pending Approval ({stats.pendingApproval})
-              </button>
-              <button
-                onClick={() => setFilter("approved")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "approved"
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Approved ({stats.approvedItems})
-              </button>
-              <button
-                onClick={() => setFilter("lost")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "lost"
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Lost Items ({stats.lostItems})
-              </button>
-              <button
-                onClick={() => setFilter("found")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === "found"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Found Items ({stats.foundItems})
-              </button>
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Item Details
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Submitted By
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Date Information
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Approval
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Linked Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => setShowItemDetails(item.id!)}
-                          title={item.name}
-                          className="block w-full text-left text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline"
-                        >
-                          {item.name.length > 20
-                            ? `${item.name.substring(0, 15)}...`
-                            : item.name}
-                        </button>
-                        <div
-                          className="text-xs text-gray-500"
-                          title={item.category}
-                        >
-                          {item.category.length > 20
-                            ? `${item.category.substring(0, 20)}...`
-                            : item.category}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={item.status}
-                          onChange={(e) =>
-                            handleStatusChange(
-                              item.id!,
-                              e.target.value as "lost" | "found" | "returned",
-                            )
-                          }
-                          className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusBadge(
-                            item.status,
-                          )}`}
-                        >
-                          {item.status === "lost" ||
-                          (item.isLinked && item.originalLostItemId) ? (
-                            <>
-                              <option value="lost">Lost</option>
-                              <option value="returned">Returned</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="found">Found</option>
-                              {item.isLinked && (
-                                <option value="returned">Returned</option>
-                              )}
-                            </>
-                          )}
-                        </select>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {item.userName}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {item.userEmail}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        <div>
-                          <span className="font-semibold">Lost/Found:</span>{" "}
-                          {item.date.toDate().toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </div>
-                        <div>
-                          <span className="font-semibold">Submitted:</span>{" "}
-                          {formatDate(item.createdAt)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            item.isApproved
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {item.isApproved ? "Approved" : "Pending"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {item.isLinked ? (
-                          <div className="text-sm">
-                            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center">
-                              <Link className="w-3 h-3 mr-1" />
-                              Linked
-                            </span>
-                            <div className="text-xs text-gray-500 mt-1">
-                              ID: {item.linkedItemId?.substring(0, 8)}...
-                            </div>
-                            <button
-                              onClick={() => unlinkItems(item.id!)}
-                              className="flex items-center text-red-600 hover:text-red-800 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded-md transition-colors mt-1 font-semibold"
-                            >
-                              <Unlink className="w-3 h-3 mr-1" />
-                              Unlink
-                            </button>
-                          </div>
-                        ) : (
-                          <span className="text-gray-500 text-sm">
-                            Not Linked
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-2">
-                          {!item.isApproved && (
-                            <button
-                              onClick={() => handleApprove(item.id!)}
-                              className="flex items-center justify-center text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 p-2 rounded-md transition-colors"
-                              title="Approve"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleReject(item.id!)}
-                            className="flex items-center justify-center text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 p-2 rounded-md transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {filteredItems.length === 0 && (
-              <div className="text-center py-12">
-                <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <div className="text-gray-500 text-lg">
-                  No items found for the selected filter.
+          {/* Conditional Rendering based on activeTab */}
+          {activeTab === "itemManagement" && (
+            <div>
+              {/* Item Management Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <Package className="w-6 h-6 text-gray-600 mb-2" />
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
+                    {stats.totalItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Total Items</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <Clock className="w-6 h-6 text-orange-600 mb-2" />
+                  <div className="text-2xl font-bold text-orange-600 mb-1">
+                    {stats.pendingApproval}
+                  </div>
+                  <div className="text-sm text-gray-600">Pending</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
+                  <div className="text-2xl font-bold text-green-600 mb-1">
+                    {stats.approvedItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Approved</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <AlertCircle className="w-6 h-6 text-red-600 mb-2" />
+                  <div className="text-2xl font-bold text-red-600 mb-1">
+                    {stats.lostItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Lost</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <Search className="w-6 h-6 text-blue-600 mb-2" />
+                  <div className="text-2xl font-bold text-blue-600 mb-1">
+                    {stats.foundItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Found</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <RotateCcw className="w-6 h-6 text-purple-600 mb-2" />
+                  <div className="text-2xl font-bold text-purple-600 mb-1">
+                    {stats.returnedItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Returned</div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow">
+                  <Link className="w-6 h-6 text-indigo-600 mb-2" />
+                  <div className="text-2xl font-bold text-indigo-600 mb-1">
+                    {stats.linkedItems}
+                  </div>
+                  <div className="text-sm text-gray-600">Linked</div>
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* Item Filters */}
+              <div className="bg-white p-6 rounded-lg shadow mb-8">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setFilter("all")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      filter === "all"
+                        ? "bg-red-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    All Items ({items.length})
+                  </button>
+                  <button
+                    onClick={() => setFilter("pending")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      filter === "pending"
+                        ? "bg-orange-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Pending Approval ({stats.pendingApproval})
+                  </button>
+                  <button
+                    onClick={() => setFilter("approved")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      filter === "approved"
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Approved ({stats.approvedItems})
+                  </button>
+                  <button
+                    onClick={() => setFilter("lost")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      filter === "lost"
+                        ? "bg-red-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Lost Items ({stats.lostItems})
+                  </button>
+                  <button
+                    onClick={() => setFilter("found")}
+                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      filter === "found"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    }`}
+                  >
+                    Found Items ({stats.foundItems})
+                  </button>
+                </div>
+              </div>
+
+              {/* Item Table */}
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Item Details
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Submitted By
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Date Information
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Approval
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Linked Status
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredItems.map((item) => (
+                        <tr key={item.id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => setShowItemDetails(item.id!)}
+                              title={item.name}
+                              className="block w-full text-left text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                              {item.name.length > 20
+                                ? `${item.name.substring(0, 15)}...`
+                                : item.name}
+                            </button>
+                            <div
+                              className="text-xs text-gray-500"
+                              title={item.category}
+                            >
+                              {item.category.length > 20
+                                ? `${item.category.substring(0, 20)}...`
+                                : item.category}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <select
+                              value={item.status}
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  item.id!,
+                                  e.target.value as
+                                    | "lost"
+                                    | "found"
+                                    | "returned"
+                                )
+                              }
+                              className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusBadge(
+                                item.status
+                              )}`}
+                            >
+                              {item.status === "lost" ||
+                              (item.isLinked && item.originalLostItemId) ? (
+                                <>
+                                  <option value="lost">Lost</option>
+                                  <option value="returned">Returned</option>
+                                </>
+                              ) : (
+                                <>
+                                  <option value="found">Found</option>
+                                  {item.isLinked && (
+                                    <option value="returned">Returned</option>
+                                  )}
+                                </>
+                              )}
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {item.userName}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {item.userEmail}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <div>
+                              <span className="font-semibold">
+                                Lost/Found:
+                              </span>{" "}
+                              {item.date.toDate().toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </div>
+                            <div>
+                              <span className="font-semibold">
+                                Submitted:
+                              </span>{" "}
+                              {formatDate(item.createdAt)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                item.isApproved
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
+                              }`}
+                            >
+                              {item.isApproved ? "Approved" : "Pending"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {item.isLinked ? (
+                              <div className="text-sm">
+                                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+                                  <Link className="w-3 h-3 mr-1" />
+                                  Linked
+                                </span>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  ID: {item.linkedItemId?.substring(0, 8)}...
+                                </div>
+                                <button
+                                  onClick={() => unlinkItems(item.id!)}
+                                  className="flex items-center text-red-600 hover:text-red-800 text-xs bg-red-100 hover:bg-red-200 px-2 py-1 rounded-md transition-colors mt-1 font-semibold"
+                                >
+                                  <Unlink className="w-3 h-3 mr-1" />
+                                  Unlink
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-gray-500 text-sm">
+                                Not Linked
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex items-center space-x-2">
+                              {!item.isApproved && (
+                                <button
+                                  onClick={() => handleApprove(item.id!)}
+                                  className="flex items-center justify-center text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200 p-2 rounded-md transition-colors"
+                                  title="Approve"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => handleReject(item.id!)}
+                                className="flex items-center justify-center text-red-700 hover:text-red-900 bg-red-100 hover:bg-red-200 p-2 rounded-md transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {filteredItems.length === 0 && (
+                  <div className="text-center py-12">
+                    <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <div className="text-gray-500 text-lg">
+                      No items found for the selected filter.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* User Management Tab Content */}
+          {activeTab === "userManagement" && (
+            <div className="mt-8">
+              <AdminUserManagement user={user} />
+            </div>
+          )}
+
+          {/* Modals (these were already in the longer file and are preserved) */}
           {showDeleteConfirm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
@@ -1019,6 +1086,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ user }) => {
             </div>
           )}
         </div>
+        {/* Notification Dialogs (preserved from the original file) */}
       </div>
       {notifications.map((notification) => (
         <NotificationDialog
