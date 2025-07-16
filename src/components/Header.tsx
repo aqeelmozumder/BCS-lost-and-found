@@ -154,7 +154,7 @@ const Header: React.FC<HeaderProps> = ({
                         {user.displayName}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {user.isAdmin ? "Administrator" : "Student"}
+                        {user.isAdmin ? "Administrator" : "User"}
                       </p>
                     </div>
                   </div>
